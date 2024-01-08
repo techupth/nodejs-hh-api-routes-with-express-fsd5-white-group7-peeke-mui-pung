@@ -41,44 +41,17 @@ app.get("/assignments/:assignmentsId", (req, res) => {
   });
 });
 
-// working on app.post with body key check
-// app.post("/assignments", (req, res) => {
-//   if (
-//     !req.body ||
-//     !req.body.hasOwnProperty("title") ||
-//     !req.body.hasOwnProperty("categories") ||
-//     !req.body.hasOwnProperty("description")
-//   ) {
-//     return res.status(400).json({
-//       message: "Invalid assignment data",
-//     });
-//   }
-//   assignmentData.push({
-//     id: assignmentData[assignmentData.length - 1].id + 1,
-//     ...req.body,
-//   });
-//   return res.json({
-//     message: "New assignment has been created successfully",
-//   });
-// });
-
-// app.post("/assignments", (req, res) => {
-//   const bodyKey = ["title", "categories", "description"];
-//   if (!req.body || bodyKey.some((key) => !req.body.hasOwnProperty(key))) {
-//     return res.status(400).json({
-//       message: "Invalid assignment data",
-//     });
-//   }
-//   assignmentData.push({
-//     id: assignmentData[assignmentData.length - 1].id + 1,
-//     ...req.body,
-//   });
-//   return res.json({
-//     message: "New assignment has been created successfully",
-//   });
-// });
-
 app.post("/assignments", (req, res) => {
+  if (
+    !req.body ||
+    !req.body.hasOwnProperty("title") ||
+    !req.body.hasOwnProperty("categories") ||
+    !req.body.hasOwnProperty("description")
+  ) {
+    return res.status(400).json({
+      message: "Invalid assignment data",
+    });
+  }
   assignmentData.push({
     id: assignmentData[assignmentData.length - 1].id + 1,
     ...req.body,
@@ -107,7 +80,6 @@ app.delete("/assignments/:assignmentsId", (req, res) => {
   });
 });
 
-//need to add key check
 app.put("/assignments/:assignmentsId", (req, res) => {
   let assignmentIdFromClient = Number(req.params.assignmentsId);
   const assignmentToUpdate = assignmentData.filter((item) => {
@@ -116,6 +88,16 @@ app.put("/assignments/:assignmentsId", (req, res) => {
   if (assignmentToUpdate.length === 0) {
     return res.json({
       message: "Cannot update, No data available!",
+    });
+  }
+  if (
+    !req.body ||
+    !req.body.hasOwnProperty("title") ||
+    !req.body.hasOwnProperty("categories") ||
+    !req.body.hasOwnProperty("description")
+  ) {
+    return res.status(400).json({
+      message: "Invalid assignment data",
     });
   }
   const assignmentIndex = assignmentData.findIndex((item) => {
@@ -153,26 +135,28 @@ app.get("/assignments/:assignmentsId/comments", (req, res) => {
   }
 });
 
-// working on create comments
-// app.post("/assignments/:assignmentsId/comments", (req, res) => {
-//   let assignmentIdFromClient = Number(req.params.assignmentsId);
-//   let assignmentDataById = assignmentData.filter(
-//     (item) => item.id === assignmentIdFromClient
-//   );
-//   if (!assignmentDataById[0]) {
-//     return res.status(404).json({
-//       message: "Assignment Not Found",
-//     });
-//   }
-//   commentData.push({
-//     id: commentData[commentData.length - 1].id + 1,
-//     assignmentId: assignmentIdFromClient,
-//     content: req.body.content,
-//   });
-//   return res.json({
-//     message: "New comment has been created successfully",
-//   });
-// });
+app.post("/assignments/:assignmentsId/comments", (req, res) => {
+  let assignmentIdFromClient = Number(req.params.assignmentsId);
+  const newCommentData = {
+    id: commentData[commentData.length - 1].id + 1,
+    assignmentId: assignmentIdFromClient,
+    content: req.body.content,
+  };
+
+  const hasAssignment = assignmentData.find((item) => {
+    return item.id === assignmentIdFromClient;
+  });
+  if (!hasAssignment) {
+    return res.status(404).json({
+      message: "Assignment Not Found",
+    });
+  }
+
+  commentData.push(newCommentData);
+  return res.json({
+    message: `New comment of assignment id ${assignmentIdFromClient} has been created successfully`,
+  });
+});
 
 app.listen(port, () => {
   console.log(`Server is running at ${port}`);
