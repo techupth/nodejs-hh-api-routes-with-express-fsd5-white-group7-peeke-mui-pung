@@ -90,16 +90,6 @@ app.put("/assignments/:assignmentsId", (req, res) => {
       message: "Cannot update, No data available!",
     });
   }
-  if (
-    !req.body ||
-    !req.body.hasOwnProperty("title") ||
-    !req.body.hasOwnProperty("categories") ||
-    !req.body.hasOwnProperty("description")
-  ) {
-    return res.status(400).json({
-      message: "Invalid assignment data",
-    });
-  }
   const assignmentIndex = assignmentData.findIndex((item) => {
     return item.id === assignmentIdFromClient;
   });
