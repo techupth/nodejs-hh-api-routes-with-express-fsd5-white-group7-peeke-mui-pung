@@ -1,7 +1,9 @@
 import express from "express";
 import { assignments } from "./data/assignments.js";
+import { comments } from "./data/comments.js";
 
 let assignmentsMockDatabase = [...assignments];
+let commentsMockDatabase = [...comments];
 
 const app = express();
 const port = 4001;
@@ -21,9 +23,9 @@ app.get("/assignments", (req, res) => {
 });
 
 app.get("/assignments/:assignmentId", (req, res) => {
-  let assignmentIdFormClient = Number(req.params.assignmentId);
+  let assignmentIdFromClient = Number(req.params.assignmentId);
   const assignmentData = assignmentsMockDatabase.filter((item) => {
-    return item.id === assignmentIdFormClient;
+    return item.id === assignmentIdFromClient;
   });
   return res.json({ data: assignmentData[0] });
 });
@@ -85,6 +87,22 @@ app.put("/assignments/:assignmentId", (req, res) => {
       message: `Assignment Id : ${assignmentIdFromClient}  has been updated successfully`,
     });
   }
+});
+
+app.get("/assignments/:assignmentId/comments", (req, res) => {
+  const assignmentIdFromClient = Number(req.params.assignmentId);
+
+  const assignmentComments = commentsMockDatabase.filter((item) => {
+    item.assignmentId == assignmentIdFromClient;
+  });
+
+  if (!assignmentComments.length) {
+    return res.json({
+      message: `No comments available on Assignment Id : ${assignmentIdFromClient}`,
+    });
+  }
+
+  return res.json({ data: assignmentComments });
 });
 
 app.listen(port, () => {
