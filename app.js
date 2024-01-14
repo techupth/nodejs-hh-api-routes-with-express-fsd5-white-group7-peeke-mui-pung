@@ -84,16 +84,29 @@ app.put("/assignments/:assignmentId", (req, res) => {
 
   if (!hasFound) {
     return res.json({
-      message: `Assignment Id : ${assignmentIdFromClient}  has been updated successfully`,
+      message: "No assignment to update",
     });
   }
+
+  const assignmentIndex = assignmentsMockDatabase.findIndex((item) => {
+    return item.id === assignmentIdFromClient;
+  });
+
+  assignmentsMockDatabase[assignmentIndex] = {
+    id: assignmentIdFromClient,
+    ...updateAssignmentData,
+  };
+
+  return res.json({
+    message: `Assignment Id : ${assignmentIdFromClient}  has been updated successfully`,
+  });
 });
 
 app.get("/assignments/:assignmentId/comments", (req, res) => {
   const assignmentIdFromClient = Number(req.params.assignmentId);
 
   const assignmentComments = commentsMockDatabase.filter((item) => {
-    item.assignmentId == assignmentIdFromClient;
+    return item.assignmentId === assignmentIdFromClient;
   });
 
   if (!assignmentComments.length) {
