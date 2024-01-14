@@ -105,6 +105,29 @@ app.get("/assignments/:assignmentId/comments", (req, res) => {
   return res.json({ data: assignmentComments });
 });
 
+app.post("/assignments/:assignmentId/comments", (req, res) => {
+  const assignmentIdFromClient = Number(req.params.assignmentId);
+
+  const commentData = {
+    id: commentsMockDatabase[commentsMockDatabase.length - 1].id + 1,
+    ...req.body,
+  };
+
+  const hasAssignment = assignmentsMockDatabase.find((item) => {
+    return item.id === assignmentIdFromClient;
+  });
+
+  if (!hasAssignment) {
+    return res.json({ message: "No assignment to add comments" });
+  }
+
+  commentsMockDatabase.push(commentData);
+
+  return res.json({
+    message: `New comment of assignment id ${assignmentIdFromClient} has been created successfully`,
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server is running at ${port}`);
 });
